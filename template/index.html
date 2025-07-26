@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FoodieRide - Welcome</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .video-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+        .content {
+            position: relative;
+            z-index: 1;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+        }
+        .option-btn {
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+        .option-btn:hover {
+            transform: scale(1.05);
+            background-color: #e02401;
+        }
+    </style>
+</head>
+<body class="bg-gray-900">
+    <video autoplay muted loop class="video-bg" id="bgVideo" poster="https://images.pexels.com/photos/123456/fallback.jpg">
+        <source id="videoSource" src="" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+    <div class="content flex items-center justify-center min-h-screen">
+        <div class="text-center">
+            <h1 class="text-5xl font-bold mb-8">Welcome to FoodieRide</h1>
+            <div class="flex justify-center space-x-6">
+                <a href="{{ url_for('home') }}" class="option-btn bg-red-600 text-white px-8 py-4 rounded-lg text-xl font-semibold">Food</a>
+                <a href="{{ url_for('ride') }}" class="option-btn bg-red-600 text-white px-8 py-4 rounded-lg text-xl font-semibold">Ride</a>
+                <a href="{{ url_for('captain') }}" class="option-btn bg-red-600 text-white px-8 py-4 rounded-lg text-xl font-semibold">Captain</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const apiKey = 'YOUR_PEXELS_API_KEY'; // Replace with your Pexels API key
+        fetch('https://api.pexels.com/videos/search?query=city+night&per_page=1', {
+            headers: { Authorization: apiKey }
+        })
+        .then(response => response.json())
+        .then(data => {
+            const videoUrl = data.videos[0].video_files[0].link;
+            document.getElementById('videoSource').src = videoUrl;
+            document.getElementById('bgVideo').load();
+        })
+        .catch(err => console.error('Video fetch failed:', err));
+    </script>
+</body>
+</html>

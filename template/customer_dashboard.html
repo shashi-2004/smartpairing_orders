@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - FoodieRide</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto p-4">
+        <h1 class="text-2xl font-bold text-red-600 mb-4">Your Dashboard</h1>
+        <a href="{{ url_for('home') }}" class="text-red-600 hover:underline mb-4 inline-block">Back to Home</a>
+        
+        <div class="bg-white p-4 rounded-lg shadow-md">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Your Orders</h2>
+            {% if orders %}
+                <ul class="space-y-4">
+                    {% for order in orders %}
+                        <li class="border-b pb-2">
+                            <p><strong>Order ID:</strong> {{ order[0] }}</p>
+                            <p><strong>Restaurant:</strong> {{ order[1] }}</p>
+                            <p><strong>Item:</strong> {{ order[4] }}</p>
+                            <p><strong>Delivery Location:</strong> Lat: {{ order[2] }}, Lon: {{ order[3] }}</p>
+                            {% if order[5] == 'pending' %}
+                                <p><strong>Status:</strong> Waiting for a Captain</p>
+                            {% elif order[5] == 'accepted' %}
+                                <p><strong>Status:</strong> Captain Accepted</p>
+                                {% if order[6] %}
+                                    <p><strong>Captain:</strong> {{ order[6] }} (Phone: {{ order[7] }})</p>
+                                {% endif %}
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-gray-600">No orders yet.</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

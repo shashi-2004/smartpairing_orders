@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FoodieRide - Book a Food Order</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .sticky-cart {
+            position: sticky;
+            top: 20px;
+        }
+        @media (max-width: 768px) {
+            .sticky-cart {
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                width: 60px;
+                height: 60px;
+                border-radius: 50%;
+                background: #FF0000;
+                color: white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <!-- Top Navigation -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex items-center justify-between flex-wrap">
+            <div class="flex items-center">
+                <span class="text-red-600 text-2xl font-bold">FoodieRide</span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <select class="border rounded-lg p-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-red-500">
+                    <option>Hyderabad</option>
+                    <option>Mumbai</option>
+                    <option>Delhi</option>
+                </select>
+                <a href="/dashboard" class="text-gray-600 hover:text-red-600">
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h18l-2 13H5L3 3zm4 18a2 2 0 100-4 2 2 0 000 4zm10 0a2 2 0 100-4 2 2 0 000 4z"/>
+                    </svg>
+                </a>
+                <div class="relative">
+                    <button class="text-gray-600 hover:text-red-600 focus:outline-none">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
+                        </svg>
+                    </button>
+                    <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg hidden">
+                        <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Profile</a>
+                        <a href="/dashboard" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Orders</a>
+                        <a href="/logout" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Restaurant Banner -->
+    <section class="container mx-auto px-4 py-6 bg-white shadow-md rounded-lg mt-4">
+        <div class="flex flex-col md:flex-row items-center">
+            <img src="https://images.unsplash.com/photo-1552566626-52f8b828969b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" 
+                 alt="Restaurant" class="w-full md:w-1/3 h-48 object-cover rounded-lg">
+            <div class="md:ml-6 mt-4 md:mt-0">
+                <h1 class="text-3xl font-bold text-gray-800">Paradise Biryani</h1>
+                <p class="text-sm text-gray-600 mt-1">Biryani, North Indian, Kebabs</p>
+                <div class="flex items-center mt-2">
+                    <span class="bg-green-600 text-white text-xs px-2 py-1 rounded">4.3 ★</span>
+                    <span class="text-gray-600 text-sm ml-2">30-40 min • Secunderabad</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Menu Section -->
+    <section class="container mx-auto px-4 py-6 flex flex-col md:flex-row">
+        <!-- Menu Categories and Items -->
+        <div class="w-full md:w-2/3">
+            <!-- Categories Tabs -->
+            <div class="flex space-x-4 border-b mb-6 overflow-x-auto">
+                <button class="category-tab py-2 px-4 text-gray-600 font-semibold border-b-2 border-transparent hover:border-red-600 active" data-category="starters">Starters</button>
+                <button class="category-tab py-2 px-4 text-gray-600 font-semibold border-b-2 border-transparent hover:border-red-600" data-category="main-course">Main Course</button>
+                <button class="category-tab py-2 px-4 text-gray-600 font-semibold border-b-2 border-transparent hover:border-red-600" data-category="desserts">Desserts</button>
+                <button class="category-tab py-2 px-4 text-gray-600 font-semibold border-b-2 border-transparent hover:border-red-600" data-category="beverages">Beverages</button>
+            </div>
+
+            <!-- Food Items -->
+            <div id="menu-items" class="space-y-6">
+                <!-- Starters -->
+                <div class="category" data-category="starters">
+                    <div class="bg-white rounded-lg shadow-md p-4 flex items-center justify-between">
+                        <div class="flex items-center">
+                            <span class="text-green-600 text-xl mr-2">●</span> <!-- Veg Icon -->
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-800">Paneer Tikka</h3>
+                                <p class="text-sm text-gray-600">Grilled paneer with spices</p>
+                                <p class="text-red-600 font-medium mt-1">₹250</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button class="decrease-qty bg-gray-200 text-gray-600 px-2 py-1 rounded hover:bg-gray-300">-</button>
+                            <span class="qty text-gray-800">0</span>
+                            <button class="increase-qty bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700">+</button>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md p-4 flex items-center justify-between">
+                        <div class="flex items-center">
+                            <span class="text-red-600 text-xl mr-2">●</span> <!-- Non-Veg Icon -->
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-800">Chicken 65</h3>
+                                <p class="text-sm text-gray-600">Spicy fried chicken bites</p>
+                                <p class="text-red-600 font-medium mt-1">₹300</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button class="decrease-qty bg-gray-200 text-gray-600 px-2 py-1 rounded hover:bg-gray-300">-</button>
+                            <span class="qty text-gray-800">0</span>
+                            <button class="increase-qty bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700">+</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Main Course -->
+                <div class="category hidden" data-category="main-course">
+                    <div class="bg-white rounded-lg shadow-md p-4 flex items-center justify-between">
+                        <div class="flex items-center">
+                            <span class="text-green-600 text-xl mr-2">●</span>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray

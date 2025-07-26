@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - FoodieRide</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+        <h2 class="text-2xl font-bold text-red-600 mb-4">Login / Sign Up</h2>
+        <form method="POST" action="{{ url_for('login', next=next) }}">
+            <div class="mb-4">
+                <label class="block text-gray-700">Name (optional for signup)</label>
+                <input type="text" name="name" class="w-full p-2 border rounded-lg">
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700">Email or Phone</label>
+                <input type="text" name="email" class="w-full p-2 border rounded-lg" required>
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700">Phone (optional for signup)</label>
+                <input type="text" name="phone" class="w-full p-2 border rounded-lg">
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700">Password</label>
+                <input type="password" name="password" class="w-full p-2 border rounded-lg" required>
+            </div>
+            <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 w-full">Submit</button>
+        </form>
+    </div>
+</body>
+</html>

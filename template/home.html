@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FoodieRide - Home</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .hero-bg {
+            background: url('https://images.unsplash.com/photo-1504672281656-e3e7b891cbab?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80') no-repeat center center;
+            background-size: cover;
+        }
+        .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5); }
+        .modal-content { background-color: #fff; margin: 15% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 500px; border-radius: 8px; }
+        .close { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
+        .close:hover, .close:focus { color: #000; text-decoration: none; }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3 flex items-center justify-between flex-wrap">
+            <div class="flex items-center">
+                <span class="text-red-600 text-2xl font-bold">FoodieRide</span>
+            </div>
+            <div class="flex items-center space-x-4 flex-grow mx-4">
+                <select class="border rounded-lg p-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-red-500">
+                    <option>Hyderabad</option>
+                    <option>Mumbai</option>
+                    <option>Delhi</option>
+                </select>
+                <div class="relative w-full max-w-md">
+                    <input type="text" placeholder="Search restaurants, dishes, cuisines..." 
+                           class="w-full p-2 pl-10 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
+                    <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </div>
+            </div>
+            <div class="flex space-x-4">
+                <span class="text-gray-600">DEBUG: is_logged_in={{ is_logged_in }}</span>
+                {% if not is_logged_in %}
+                    <a href="{{ url_for('login', next='home') }}" class="text-red-600 hover:text-red-800 font-medium">Login</a>
+                    <a href="{{ url_for('login', next='home') }}" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">Sign Up</a>
+                {% else %}
+                    <div class="relative group">
+                        <button class="text-gray-600 hover:text-red-600 flex items-center focus:outline-none">
+                            <span class="mr-2">{{ username }}</span>
+                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg hidden group-hover:block">
+                            <a href="{{ url_for('dashboard') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Dashboard</a>
+                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Profile</a>
+                            <a href="{{ url_for('logout') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Logout</a>
+                        </div>
+                    </div>
+                    <button id="orderFoodBtn" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">Order Food</button>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero-bg h-96 flex items-center justify-center text-center text-white">
+        <div class="bg-black bg-opacity-50 p-6 rounded-lg">
+            <h1 class="text-4xl font-bold mb-4">Hungry? We’ve Got You Covered!</h1>
+            <div class="relative max-w-lg mx-auto">
+                <input type="text" placeholder="Find restaurants, dishes, or cuisines" 
+                       class="w-full p-3 pl-10 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500">
+                <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+            </div>
+        </div>
+    </section>
+
+    <section class="container mx-auto px-4 py-12">
+        <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center">Explore Our Services</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-white rounded-lg shadow-lg p-4 hover:shadow-xl transition">
+                <img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" 
+                     alt="Order Food" class="w-full h-40 object-cover rounded-t-lg">
+                <h3 class="text-xl font-semibold text-red-600 mt-4">Order Food Online</h3>
+                <p class="text-gray-600 mt-2">Delicious meals delivered to your door in minutes.</p>
+            </div>
+            <div class="bg-white rounded-lg shadow-lg p-4 hover:shadow-xl transition">
+                <img src="https://images.unsplash.com/photo-1552566626-52f8b828969b?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" 
+                     alt="Dine-Out" class="w-full h-40 object-cover rounded-t-lg">
+                <h3 class="text-xl font-semibold text-red-600 mt-4">Dine-Out</h3>
+                <p class="text-gray-600 mt-2">Reserve a table at top restaurants near you.</p>
+            </div>
+            <div class="bg-white rounded-lg shadow-lg p-4 hover:shadow-xl transition">
+                <img src="https://images.unsplash.com/photo-1517248135467-2c7ed3ab7229?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" 
+                     alt="Nightlife" class="w-full h-40 object-cover rounded-t-lg">
+                <h3 class="text-xl font-semibold text-red-600 mt-4">Nightlife</h3>
+                <p class="text-gray-600 mt-2">Explore the best bars and clubs in town.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="container mx-auto px-4 py-12 bg-gray-50">
+        <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center">Popular Restaurants</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            <div class="bg-white rounded-lg shadow-lg p-4 hover:shadow-xl transition">
+                <img src="https://images.unsplash.com/photo-1565299624946-baccd3051819?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" 
+                     alt="Restaurant" class="w-full h-40 object-cover rounded-t-lg">
+                <div class="p-4">
+                    <h3 class="text-lg font-semibold text-gray-800">Paradise Biryani</h3>
+                    <p class="text-sm text-gray-600">Biryani, North Indian • ₹200-400</p>
+                    <div class="flex items-center mt-2">
+                        <span class="bg-green-600 text-white text-xs px-2 py-1 rounded">4.2 ★</span>
+                        <span class="text-gray-600 text-sm ml-2">30-40 min</span>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-lg shadow-lg p-4 hover:shadow-xl transition">
+                <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" 
+                     alt="Restaurant" class="w-full h-40 object-cover rounded-t-lg">
+                <div class="p-4">
+                    <h3 class="text-lg font-semibold text-gray-800">Bawarchi</h3>
+                    <p class="text-sm text-gray-600">Hyderabadi, Chinese • ₹150-300</p>
+                    <div class="flex items-center mt-2">
+                        <span class="bg-green-600 text-white text-xs px-2 py-1 rounded">4.5 ★</span>
+                        <span class="text-gray-600 text-sm ml-2">25-35 min</span>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-lg shadow-lg p-4 hover:shadow-xl transition">
+                <img src="https://images.unsplash.com/photo-1552566626-52f8b828969b?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" 
+                     alt="Restaurant" class="w-full h-40 object-cover rounded-t-lg">
+                <div class="p-4">
+                    <h3 class="text-lg font-semibold text-gray-800">Jewel of Nizam</h3>
+                    <p class="text-sm text-gray-600">Mughlai, Desserts • ₹300-600</p>
+                    <div class="flex items-center mt-2">
+                        <span class="bg-green-600 text-white text-xs px-2 py-1 rounded">4.3 ★</span>
+                        <span class="text-gray-600 text-sm ml-2">35-45 min</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-red-600 text-white py-8">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">FoodieRide</h4>
+                    <p class="text-sm">Your one-stop solution for food services.</p>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Company</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:underline">About</a></li>
+                        <li><a href="#" class="hover:underline">Careers</a></li>
+                        <li><a href="#" class="hover:underline">Help</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Follow Us</h4>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-white hover:text-gray-200">
+                            <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.04c-5.5 0-9.96 4.46-9.96 9.96 0 5.06 4.62 9.22 10.56 9.9v-6.98h-3.18v-2.92h3.18v-2.22c0-3.14 1.88-4.86 4.74-4.86 1.36 0 2.52.1 2.86.14v3.32h-1.96c-1.54 0-1.84.74-1.84 1.82v2.4h3.68l-.48 2.92h-3.2v6.98c5.94-.68 10.56-4.84 10.56-9.9 0-5.5-4.46-9.96-9.96-9.96z"/></svg>
+                        </a>
+                        <a href="#" class="text-white hover:text-gray-200">
+                            <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M23.94 4.56c-.88.4-1.84.66-2.86.78 1.02-.62 1.82-1.6 2.2-2.76-.96.58-2.02.98-3.16 1.2-.9-.96-2.2-1.56-3.62-1.56-2.66 0-4.82 2.16-4.82 4.82 0 .38.04.76.14 1.12-.66-.2-1.3-.52-1.86-.96-.06 0-.12-.02-.18-.02-1.68 0-3.06 1.38-3.06 3.06 0 .24.02.48.08.7-2.54-.12-4.78-1.34-6.28-3.2-.26.46-.4.98-.4 1.54 0 1.06.54 2 1.36 2.54-.5-.02-.98-.16-1.4-.4v.04c0 1.48 1.06 2.72 2.46 3-.26.08-.52.12-.8.12-.2 0-.38-.02-.56-.06.38 1.2 1.5 2.06 2.82 2.08-1.04.82-2.34 1.3-3.76 1.3-.24 0-.48-.02-.72-.06 1.34.86 2.94 1.36 4.66 1.36 5.6 0 8.66-4.64 8.66-8.66 0-.14 0-.28-.02-.42.6-.44 1.12-.98 1.54-1.6z"/></svg>
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Contact</h4>
+                    <p class="text-sm">support@foodieride.com</p>
+                    <p class="text-sm">+91 123-456-7890</p>
+                </div>
+            </div>
+            <div class="text-center mt-8 text-sm">
+                <p>© 2025 FoodieRide. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <div id="foodModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="foodClose">×</span>
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Order Food</h2>
+            <form method="POST" action="{{ url_for('book') }}">
+                <div class="mb-4">
+                    <label class="block text-gray-700">Restaurant</label>
+                    <select name="restaurant" class="w-full p-2 border rounded-lg" required>
+                        {% for restaurant in restaurants %}
+                            <option value="{{ restaurant[0] }}">{{ restaurant[0] }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700">Item</label>
+                    <input type="text" name="item" class="w-full p-2 border rounded-lg" placeholder="e.g., Chicken Biryani" required>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700">Delivery Address</label>
+                    <input type="text" name="food_address" class="w-full p-2 border rounded-lg" required>
+                </div>
+                <input type="hidden" name="order_type" value="food">
+                <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">Place Food Order</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        var foodModal = document.getElementById("foodModal");
+        var foodBtn = document.getElementById("orderFoodBtn");
+        var foodClose = document.getElementById("foodClose");
+
+        foodBtn.onclick = function() {
+            foodModal.style.display = "block";
+        }
+        foodClose.onclick = function() {
+            foodModal.style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            if (event.target == foodModal) {
+                foodModal.style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>

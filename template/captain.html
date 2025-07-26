@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Captain Dashboard - FoodieRide</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        body { font-family: 'Arial', sans-serif; background-color: #f5f5f5; }
+        .navbar { background-color: #fff; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); }
+        #map { height: 40vh; }
+        .task-card { transition: all 0.2s ease; }
+        .task-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); }
+        .toggle-switch { position: relative; display: inline-block; width: 60px; height: 34px; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 26px; width: 26px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: #22c55e; }
+        input:checked + .slider:before { transform: translateX(26px); }
+        @media (min-width: 768px) {
+            #map { height: 60vh; }
+            .dashboard-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar p-4 flex items-center justify-between">
+        <div class="text-xl font-bold text-red-600">FoodieRide</div>
+        <div class="flex items-center space-x-4">
+            <label class="toggle-switch">
+                <input type="checkbox" id="availability" checked>
+                <span class="slider"></span>
+            </label>
+            <span id="status" class="text-sm text-gray-600">Online</span>
+            <svg class="h-6 w-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 00-6-6V3m-6 14h-5l1.405-1.405A2.032 2.032 0 006 14.158V11a6 6 0 016-6V3" />
+            </svg>
+            <div class="relative group">
+                <svg class="h-6 w-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+                <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg hidden group-hover:block">
+                    <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Profile</a>
+                    <a href="{{ url_for('logout') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Dashboard -->
+    <div class="container mx-auto p-4">
+        <div class="dashboard-grid">
+            <!-- Active Tasks Panel -->
+            <div class="bg-white rounded-lg shadow-md p-4">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Active Tasks</h2>
+                <div class="flex border-b mb-4">
+                    <button id="pairTab" class="flex-1 py-2 text-red-600 border-b-2 border-red-600">Pair</button>
+                    <button id="foodTab" class="flex-1 py-2 text-gray-600">Food</button>
+                    <button id="rideTab" class="flex-1 py-2 text-gray-600">Ride</button>
+                </div>
+                <!-- Pair Tasks -->
+                <div id="pairTasks" class="space-y-4">
+                    {% if pending_tasks %}
+                        {% for task in pending_tasks %}
+                            {% if task.pickup_id %}
+                            <div class="task-card bg-gray-100 p-4 rounded-lg">
+                                <div class="border-b pb-2 mb-2">
+                                    <p class="font-semibold text-red-600">Food Pickup</p>
+                                    <p class="text-sm text-gray-600">Restaurant: {{ task.rest_name }}</p>
+                                    <p class="text-sm text-gray-600">Pickup: {{ task.rest_lat }}, {{ task.rest_lon }}</p>
+                                    <p class="text-sm text-gray-600">Delivery: {{ task.food_lat }}, {{ task.food_lon }}</p>
+                                    <p class="text-sm text-gray-600">Item: {{ task.item }}</p>
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-green-600">Passenger Pickup</p>
+                                    <p class="text-sm text-gray-600">Pickup: {{ task.pickup_lat }}, {{ task.pickup_lon }}</p>
+                                    <p class="text-sm text-gray-600">Distance: {{ task.distance|round(2) }} km</p>
+                                </div>
+                                <form method="POST" action="{{ url_for('accept') }}" class="mt-2">
+                                    <input type="hidden" name="food_id" value="{{ task.food_id }}">
+                                    <input type="hidden" name="pickup_id" value="{{ task.pickup_id }}">
+                                    <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">Accept Pair</button>
+                                </form>
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        <div class="task-card bg-gray-100 p-4 rounded-lg">
+                            <div class="border-b pb-2 mb-2">
+                                <p class="font-semibold text-red-600">Food Delivery</p>
+                                <p class="text-sm text-gray-600">Restaurant: Taste of Hyderabad</p>
+                                <p class="text-sm text-gray-600">Pickup: 17.3850, 78.4867</p>
+                            </div>
+                            <div class="border-b pb-2 mb-2">
+                                <p class="font-semibold text-red-600">Delivery Location</p>
+                                <p class="text-sm text-gray-600">Drop-off: 17.3900, 78.4900</p>
+                            </div>
+                            <div class="border-b pb-2 mb-2">
+                                <p class="font-semibold text-green-600">Passenger Pickup</p>
+                                <p class="text-sm text-gray-600">Pickup: 17.3870, 78.4880</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-600">Distance between food pickup and delivery: 0.7 km</p>
+                            </div>
+                            <form method="POST" action="{{ url_for('accept') }}" class="mt-2">
+                                <input type="hidden" name="food_id" value="example_food_123">
+                                <input type="hidden" name="pickup_id" value="example_pickup_456">
+                                <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">Accept Pair</button>
+                            </form>
+                        </div>
+                    {% endif %}
+                </div>
+                <!-- Food Tasks -->
+                <div id="foodTasks" class="space-y-4 hidden">
+                    {% if pending_tasks %}
+                        {% for task in pending_tasks %}
+                            <div class="task-card bg-gray-100 p-4 rounded-lg">
+                                <p class="font-semibold text-red-600">{{ task.rest_name }}</p>
+                                <p class="text-sm text-gray-600">Pickup: {{ task.rest_lat }}, {{ task.rest_lon }}</p>
+                                <p class="text-sm text-gray-600">Drop: {{ task.food_lat }}, {{ task.food_lon }}</p>
+                                <p class="text-sm text-gray-600">Item: {{ task.item }}</p>
+                                <form method="POST" action="{{ url_for('accept') }}" class="mt-2">
+                                    <input type="hidden" name="food_id" value="{{ task.food_id }}">
+                                    <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">Accept Order</button>
+                                </form>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-sm text-gray-600">No pending food orders available.</p>
+                    {% endif %}
+                </div>
+                <!-- Ride Tasks (Static Example) -->
+                <div id="rideTasks" class="space-y-4 hidden">
+                    <div class="task-card bg-gray-100 p-4 rounded-lg">
+                        <p class="font-semibold">Passenger: Ravi</p>
+                        <p class="text-sm text-gray-600">Pickup: Gachibowli</p>
+                        <p class="text-sm text-gray-600">Drop: Hitech City</p>
+                        <p class="text-sm text-gray-600">Fare: ₹120 | ETA: 15 min</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Map View -->
+            <div class="bg-white rounded-lg shadow-md p-4">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Map View</h2>
+                <div id="map"></div>
+            </div>
+        </div>
+
+        <!-- Earnings Summary -->
+        <div class="bg-white rounded-lg shadow-md p-4 mt-4">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Earnings Summary</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="text-center">
+                    <p class="text-sm text-gray-600">Daily Earnings</p>
+                    <p class="text-2xl font-bold text-green-600">₹450</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-sm text-gray-600">Weekly Earnings</p>
+                    <p class="text-2xl font-bold text-green-600">₹3200</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-sm text-gray-600">Completed Tasks</p>
+                    <p class="text-2xl font-bold text-green-600">12</p>
+                </div>
+            </div>
+            <p class="text-sm text-gray-600 mt-2 text-center">Bonus: ₹200</p>
+        </div>
+
+        <!-- Task History -->
+        <div class="bg-white rounded-lg shadow-md p-4 mt-4">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Task History</h2>
+            <div class="flex space-x-4 mb-4">
+                <select class="border rounded-lg p-2 text-gray-600">
+                    <option>Date</option>
+                    <option>Today</option>
+                    <option>Yesterday</option>
+                </select>
+                <select class="border rounded-lg p-2 text-gray-600">
+                    <option>Type</option>
+                    <option>Ride</option>
+                    <option>Food</option>
+                    <option>Pair</option>
+                </select>
+                <select class="border rounded-lg p-2 text-gray-600">
+                    <option>Status</option>
+                    <option>Completed</option>
+                    <option>Cancelled</option>
+                </select>
+            </div>
+            <div class="space-y-4 max-h-64 overflow-y-auto">
+                <div class="task-card bg-gray-100 p-4 rounded-lg">
+                    <p class="font-semibold">Pair: Paradise + Priya</p>
+                    <p class="text-sm text-gray-600">Completed: Today, 2:30 PM</p>
+                    <p class="text-sm text-gray-600">Earnings: ₹210</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Map Initialization
+        var map = L.map('map').setView([17.3850, 78.4867], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
+
+        // Add markers for pending tasks (optional)
+        {% if pending_tasks %}
+            {% for task in pending_tasks %}
+                L.marker([{{ task.rest_lat }}, {{ task.rest_lon }}]).addTo(map).bindPopup('Restaurant: {{ task.rest_name }}');
+                L.marker([{{ task.food_lat }}, {{ task.food_lon }}]).addTo(map).bindPopup('Delivery: {{ task.item }}');
+            {% endfor %}
+        {% else %}
+            // Markers for default example
+            L.marker([17.3850, 78.4867]).addTo(map).bindPopup('Restaurant: Taste of Hyderabad');
+            L.marker([17.3900, 78.4900]).addTo(map).bindPopup('Delivery Location');
+            L.marker([17.3870, 78.4880]).addTo(map).bindPopup('Passenger Pickup');
+        {% endif %}
+
+        // Tab Switching
+        document.getElementById('pairTab').addEventListener('click', () => {
+            document.getElementById('pairTasks').classList.remove('hidden');
+            document.getElementById('foodTasks').classList.add('hidden');
+            document.getElementById('rideTasks').classList.add('hidden');
+            document.getElementById('pairTab').classList.add('text-red-600', 'border-b-2', 'border-red-600');
+            document.getElementById('foodTab').classList.remove('text-red-600', 'border-b-2', 'border-red-600');
+            document.getElementById('rideTab').classList.remove('text-red-600', 'border-b-2', 'border-red-600');
+            document.getElementById('foodTab').classList.add('text-gray-600');
+            document.getElementById('rideTab').classList.add('text-gray-600');
+        });
+        document.getElementById('foodTab').addEventListener('click', () => {
+            document.getElementById('foodTasks').classList.remove('hidden');
+            document.getElementById('pairTasks').classList.add('hidden');
+            document.getElementById('rideTasks').classList.add('hidden');
+            document.getElementById('foodTab').classList.add('text-red-600', 'border-b-2', 'border-red-600');
+            document.getElementById('pairTab').classList.remove('text-red-600', 'border-b-2', 'border-red-600');
+            document.getElementById('rideTab').classList.remove('text-red-600', 'border-b-2', 'border-red-600');
+            document.getElementById('pairTab').classList.add('text-gray-600');
+            document.getElementById('rideTab').classList.add('text-gray-600');
+        });
+        document.getElementById('rideTab').addEventListener('click', () => {
+            document.getElementById('rideTasks').classList.remove('hidden');
+            document.getElementById('pairTasks').classList.add('hidden');
+            document.getElementById('foodTasks').classList.add('hidden');
+            document.getElementById('rideTab').classList.add('text-red-600', 'border-b-2', 'border-red-600');
+            document.getElementById('pairTab').classList.remove('text-red-600', 'border-b-2', 'border-red-600');
+            document.getElementById('foodTab').classList.remove('text-red-600', 'border-b-2', 'border-red-600');
+            document.getElementById('pairTab').classList.add('text-gray-600');
+            document.getElementById('foodTab').classList.add('text-gray-600');
+        });
+
+        // Availability Toggle
+        document.getElementById('availability').addEventListener('change', (e) => {
+            document.getElementById('status').textContent = e.target.checked ? 'Online' : 'Offline';
+        });
+    </script>
+</body>
+</html>
